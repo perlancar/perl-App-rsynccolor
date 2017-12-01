@@ -1,0 +1,64 @@
+#!perl
+
+# DATE
+# VERSION
+
+use strict;
+use warnings;
+
+sub sanity_check {
+    require File::Which;
+    File::Which::which("rsync") or die "rsync: Can't find rsync in PATH\n";
+}
+
+sub parse_cmdline {
+}
+
+sub run {
+    require App::diffwc;
+    require ShellQuote::Any::Tiny;
+
+    my $cmd = "rsync" . (@ARGV ? " " : "") .
+        join(" ", map { ShellQuote::Any::Tiny::shell_quote($_) } @ARGV);
+    open my $rsync, "$cmd |" or die "rsynccolor: Can't run rsync: $!\n";
+
+    App::rsynccolor::postprocess($rsync);
+
+    close $rsync;
+    exit $? >> 8;
+}
+
+# MAIN
+
+sanity_check();
+parse_cmdline();
+run();
+
+1;
+# ABSTRACT: Add some color to rsync output
+# PODNAME:
+
+=head1 SYNOPSIS
+
+Use as you would use B<rsync>:
+
+ % rsynccolor -Pav --del dir1/ dir2/
+
+To alias B<rsync> to B<rsynccolor>, in your shell startup file:
+
+ alias rsync=rsynccolor
+
+
+=head1 DESCRIPTION
+
+This is a wrapper for the GNU command-line utility B<rsync>. It adds some color
+to rsync output, currently:
+
+  delete FILENAME
+
+will be highlighted in red to be more visually striking.
+
+
+=head1 SEE ALSO
+
+=cut
