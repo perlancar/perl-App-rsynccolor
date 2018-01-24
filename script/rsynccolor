@@ -63,7 +63,7 @@ To alias B<rsync> to B<rsynccolor>, in your shell startup file:
 This is a wrapper for the GNU command-line utility B<rsync>. It adds some color
 to rsync output, currently:
 
-  delete FILENAME
+  deleting FILENAME
 
 will be highlighted in red to be more visually striking.
 
