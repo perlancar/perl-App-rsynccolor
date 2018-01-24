@@ -3,6 +3,7 @@
 # DATE
 # VERSION
 
+use 5.010001;
 use strict;
 use warnings;
 
@@ -15,14 +16,22 @@ sub parse_cmdline {
 }
 
 sub run {
-    require App::diffwc;
     require ShellQuote::Any::Tiny;
 
     my $cmd = "rsync" . (@ARGV ? " " : "") .
         join(" ", map { ShellQuote::Any::Tiny::shell_quote($_) } @ARGV);
     open my $rsync, "$cmd |" or die "rsynccolor: Can't run rsync: $!\n";
 
-    App::rsynccolor::postprocess($rsync);
+    my $use_color = $ENV{COLOR} // (-t STDOUT);
+
+    $|++;
+    while (<$rsync>) {
+        if ($use_color && s/^deleting //) {
+            print "\e[31mdeleting \e[0m$_";
+            next;
+        }
+        print;
+    }
 
     close $rsync;
     exit $? >> 8;
@@ -57,6 +66,13 @@ to rsync output, currently:
   delete FILENAME
 
 will be highlighted in red to be more visually striking.
+
+
+=head1 ENVIRONMENT
+
+=head2 COLOR => bool
+
+Force setting color on or off. Default is on when interactive.
 
 
 =head1 SEE ALSO
