@@ -30,6 +30,7 @@ sub run {
 
     my $start_of_line = 1;
     while (!eof($rsync)) {
+        no warnings 'uninitialized'; # "Use of uninitialized value in subroutine entry" at line below
         defined(my $line = fgets($rsync, 32))
             or die "rsynccolor: fgets failed: $!\n";
 
