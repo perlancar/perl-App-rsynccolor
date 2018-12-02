@@ -24,7 +24,13 @@ sub run {
         join(" ", map { ShellQuote::Any::Tiny::shell_quote($_) } @ARGV);
     open my $rsync, "$cmd |" or die "rsynccolor: Can't run rsync: $!\n";
 
-    my $use_color = $ENV{COLOR} // (-t STDOUT);
+    my $use_color = do {
+        if (exists $ENV{NO_COLOR}) {
+            0;
+        } else {
+            $ENV{COLOR} // (-t STDOUT);
+        }
+    };
 
     $|++;
 
@@ -77,6 +83,11 @@ will be highlighted in red to be more visually striking.
 
 
 =head1 ENVIRONMENT
+
+=head2 NO_COLOR
+
+Force setting color off. Takes precedence over C<COLOR>. See
+L<https://no-color.org>.
 
 =head2 COLOR => bool
 
