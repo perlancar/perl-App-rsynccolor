@@ -20,7 +20,8 @@ sub parse_cmdline {
 sub run {
     require ShellQuote::Any::Tiny;
 
-    my $cmd = "rsync" . (@ARGV ? " " : "") .
+    my $rsync_cmd = $ENV{RSYNCCOLOR_RSYNC_CMD} // "rsync";
+    my $cmd = $rsync_cmd . (@ARGV ? " " : "") .
         join(" ", map { ShellQuote::Any::Tiny::shell_quote($_) } @ARGV);
     open my $rsync, "$cmd |" or die "rsynccolor: Can't run rsync: $!\n";
 
@@ -83,6 +84,11 @@ will be highlighted in red to be more visually striking.
 
 
 =head1 ENVIRONMENT
+
+=head2 RSYNCCOLOR_RSYNC_CMD
+
+String. Rsync command to use. Defaults to C<rsync>. Can be used to chain several
+wrappers together.
 
 =head2 NO_COLOR
 
