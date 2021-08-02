@@ -2,3 +2,4 @@ App-rsynccolor-*
 .build
 *~
 nytprof*
+.DS_Store
